@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 
 namespace Testing_Demo
 {
@@ -10,50 +7,33 @@ namespace Testing_Demo
     {
         static void Main(string[] args)
         {
-            
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .Build();
+            Logger logger = new Logger();
 
-            
-            var serviceProvider = new ServiceCollection()
-                .AddLogging(builder =>
-                {
-                    builder.AddConfiguration(configuration.GetSection("Logging"));
-                    builder.AddConsole();
-                })
-                .AddSingleton<IConfiguration>(configuration)
-                .BuildServiceProvider();
+            logger.Log("Program started");
 
-            
-            var logger = serviceProvider.GetService<ILogger<Program>>();
-            var tournamentLogger = serviceProvider.GetService<ILogger<Tournament>>();
+            Tournament tournament = new Tournament(logger);
 
-            logger.LogInformation("Program started");
-
-            Tournament tournament = new Tournament(tournamentLogger);
-
-            
+            // Adding some teams
             Team team1 = new Team("Team A");
             Team team2 = new Team("Team B");
             Team team3 = new Team("Team C");
 
-            logger.LogInformation("Teams created");
+            logger.Log("Teams created");
 
             tournament.AddTeam(team1);
             tournament.AddTeam(team2);
             tournament.AddTeam(team3);
 
-            logger.LogInformation("Teams added");
+            logger.Log("Teams added");
 
-            
+            // Playing some matches
             tournament.PlayMatch(team1, team2, team1);
             tournament.PlayMatch(team2, team3, team2);
             tournament.PlayMatch(team1, team3, team1);
 
-            logger.LogInformation("Matches completed");
+            logger.Log("Matches completed");
 
-            
+            // Displaying standings
             List<Team> standings = tournament.GetStandings();
 
             Console.WriteLine("Tournament Standings:");
@@ -61,7 +41,7 @@ namespace Testing_Demo
             {
                 Console.WriteLine(team);
             }
-            logger.LogInformation("Program stopped");
+            logger.Log("Program stopped");
         }
     }
 }

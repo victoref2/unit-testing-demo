@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Testing_Demo
@@ -7,32 +6,32 @@ namespace Testing_Demo
     public class Tournament
     {
         public List<Team> Teams { get; private set; }
-        private readonly ILogger<Tournament>? _logger;
+        private readonly Logger? _logger;
 
-        public Tournament(ILogger<Tournament>? logger = null)
+        public Tournament(Logger? logger = null)
         {
             Teams = new List<Team>();
             _logger = logger;
-            _logger?.LogInformation("Tournament created.");
+            _logger?.Log("Tournament created.");
         }
 
         public void AddTeam(Team team)
         {
             Teams.Add(team);
-            _logger?.LogInformation("Team {TeamName} added to the tournament.", team.Name);
+            _logger?.Log($"Team {team.Name} added to the tournament.");
         }
 
         public void PlayMatch(Team team1, Team team2, Team winner)
         {
             if (!Teams.Contains(team1) || !Teams.Contains(team2))
             {
-                _logger?.LogWarning("One or both teams are not part of the tournament. Match not played.");
+                _logger?.Log("One or both teams are not part of the tournament. Match not played.");
                 return;
             }
 
             Game match = new Game(team1, team2);
             match.PlayMatch(winner);
-            _logger?.LogInformation("Match played between {Team1} and {Team2}. Winner: {Winner}", team1.Name, team2.Name, winner.Name);
+            _logger?.Log($"Match played between {team1.Name} and {team2.Name}. Winner: {winner.Name}");
         }
 
         public Team GetTeamByName(string name)
@@ -40,11 +39,11 @@ namespace Testing_Demo
             Team team = Teams.Find(t => t.Name == name);
             if (team == null)
             {
-                _logger?.LogWarning("Team with name {TeamName} not found.", name);
+                _logger?.Log($"Team with name {name} not found.");
             }
             else
             {
-                _logger?.LogInformation("Team {TeamName} found.", name);
+                _logger?.Log($"Team {name} found.");
             }
             return team;
         }
@@ -52,7 +51,7 @@ namespace Testing_Demo
         public List<Team> GetStandings()
         {
             Teams.Sort((team1, team2) => team2.Points.CompareTo(team1.Points));
-            _logger?.LogInformation("Standings retrieved.");
+            _logger?.Log("Standings retrieved.");
             return Teams;
         }
     }
